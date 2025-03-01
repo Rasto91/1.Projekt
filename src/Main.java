@@ -1,16 +1,21 @@
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, PlantException {
         PlantList plantList = new PlantList();
 
-//        // Načítanie zo súboru
-//        try {
-//            plantList.loadFromFile("plantList/flowers-bad-frequency.txt");
-//        } catch (IOException e) {
-//            System.err.println("Chyba pri načítaní zo súboru: " + e.getMessage());
-//        }
+        // Načítanie zo súboru
+        try {
+            plantList.loadFromFile("plantList/flowers-bad-frequency.txt");
+        } catch (IOException e) {
+            System.err.println("Chyba pri načítaní zo súboru: " + e.getMessage());
+        } catch (PlantException e) {
+            System.err.println("Chyba pri validácii dát: " + e.getMessage());
+        }
+
 
         // Výpis informácií o zálievke
         for (Plant plant : plantList.getPlants()) {
@@ -42,7 +47,7 @@ public class Main {
             System.out.println(plant.getName());
         }
 
-        plantList.sortByWateringDate();
+        Collections.sort(plantList.getPlants(), Comparator.comparing(Plant::getWatering));
         System.out.println("\nZoznam kvetín zoradený podľa dátumu poslednej zálievky:");
         for (Plant plant : plantList.getPlants()) {
             System.out.println(plant.getWatering());

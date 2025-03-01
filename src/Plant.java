@@ -1,14 +1,14 @@
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class Plant {
+public class Plant implements Comparable<Plant> {
     private String name;
     private String notes;
     private LocalDate planted;
     private LocalDate watering;
     private int wateringFrequency;
 
-    public Plant(String name, String notes, LocalDate planted, LocalDate watering, int wateringFrequency) {
+    public Plant(String name, String notes, LocalDate planted, LocalDate watering, int wateringFrequency) throws PlantException {
         this.name = name;
         this.notes = notes;
         this.planted = planted;
@@ -19,11 +19,11 @@ public class Plant {
 
     }
 
-    public Plant(String name) {
+    public Plant(String name) throws PlantException {
         this(name, "", LocalDate.now(), LocalDate.now(), 7);
     }
 
-    public Plant(String name, int wateringFrequency) {
+    public Plant(String name, int wateringFrequency) throws PlantException {
         this(name, "", LocalDate.now(), LocalDate.now(), wateringFrequency);
     }
 
@@ -47,14 +47,18 @@ public class Plant {
         return wateringFrequency;
     }
 
-    public void setWateringFrequency(int wateringFrequency) {
+    public void setWateringFrequency(int wateringFrequency) throws PlantException {
+        if (wateringFrequency <= 0) {
+            throw new PlantException("Frekvencia zálievky musí byť kladné číslo.");
+        }
         this.wateringFrequency = wateringFrequency;
-        validateWateringFrequency();
     }
 
-    public void setWatering(LocalDate watering) {
+    public void setWatering(LocalDate watering) throws PlantException {
+        if (watering.isBefore(planted)) {
+            throw new PlantException("Dátum poslednej zálievky nemôže byť starší ako dátum zasadenia.");
+        }
         this.watering = watering;
-        validateWateringDate();
     }
 
     public String getWateringInfo() {
@@ -66,15 +70,15 @@ public class Plant {
         this.watering = LocalDate.now();
     }
 
-
-    private void validateWateringFrequency() {
-        if (wateringFrequency <= 0)
-            throw new PlantException("Frekvencia zálievky musí byť kladné číslo");
+    private void validateWateringFrequency() throws PlantException {
+        if (wateringFrequency <= 0) {
+            throw new PlantException("Frekvencia zálievky musí byť kladné číslo.");
+        }
     }
 
-    private void validateWateringDate() {
+    private void validateWateringDate() throws PlantException {
         if (watering.isBefore(planted)) {
-            throw new PlantException("Dátum poslednej zálievky nemôže byť starší ako dátum zasadenia");
+            throw new PlantException("Dátum poslednej zálievky nemôže byť starší ako dátum zasadenia.");
         }
     }
 
@@ -82,5 +86,9 @@ public class Plant {
         return ChronoUnit.DAYS.between(watering, LocalDate.now());
     }
 
+    @Override
+    public int compareTo(Plant other) {
+        return this.name.compareTo(other.name);
+    }
 
 }
