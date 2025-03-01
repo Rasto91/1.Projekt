@@ -23,22 +23,44 @@ public class Main {
         }
 
         // Pridanie novej kvetiny
-        plantList.addPlant(new Plant("Fialka", "Kvitne na jar", LocalDate.now(), LocalDate.now(), 7));
+        try {
+            plantList.addPlant(new Plant("Fialka", "Kvitne na jar", LocalDate.now(), LocalDate.now(), 7));
+        } catch (PlantException e) {
+            System.err.println("Chyba pri vytváraní kvetiny: " + e.getMessage());
+        }
 
         // Pridanie 10 tulipánov
         for (int i = 1; i <= 10; i++) {
-            plantList.addPlant(new Plant("Tulipán na predaj " + i, " ", LocalDate.now(), LocalDate.now(), 14));
+            try {
+                plantList.addPlant(new Plant("Tulipán na predaj " + i, " ", LocalDate.now(), LocalDate.now(), 14));
+            } catch (PlantException e) {
+                System.err.println("Chyba pri vytváraní tulipánu: " + e.getMessage());
+            }
         }
 
         plantList.removePlant(3);
 
-        plantList.saveToFile("plantList/kvetiny_aktualizovane.txt");
+        // Uloženie do výstupného súboru
+        try {
+            plantList.saveToFile("plantList/kvetiny_aktualizovane.txt");
+        } catch (IOException e) {
+            System.err.println("Chyba pri ukladaní do súboru: " + e.getMessage());
+        }
 
+        // Načítanie z výstupného súboru
         PlantList plantList2 = new PlantList();
-        plantList2.loadFromFile("plantList/kvetiny_aktualizovane.txt");
+        try {
+            plantList2.loadFromFile("plantList/kvetiny_aktualizovane.txt");
+        } catch (IOException e) {
+            System.err.println("Chyba pri načítaní zo súboru: " + e.getMessage());
+        } catch (PlantException e) {
+            System.err.println("Chyba pri validácii dát: " + e.getMessage());
+        }
 
+        // Overenie, či sú dáta správne načítané
+        System.out.println("\nOverenie načítania z kvetiny_aktualizovane.txt:");
         for (Plant plant : plantList2.getPlants()) {
-            System.out.println(plant.getWateringInfo());
+            System.out.println(plant.getName());
         }
 
         plantList.sortByName();
